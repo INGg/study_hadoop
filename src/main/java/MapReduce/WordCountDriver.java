@@ -23,7 +23,7 @@ class WordCountMapper extends Mapper<LongWritable, Text, Text, IntWritable>{
         String line = value.toString();
         // 内容分隔
         String[] words = line.split(" ");
-        // 遍历数组，每出现过一个单词就标记一个数组1
+        // 遍历数组，每出现过一个单词就标记一个数组1，组装<k1,v1>
         for(String word: words){
             // 使用 context，把Map阶段处理的数据发送给Reduce阶段作为输入数据
             // Context context这是可以记录输入的key和value
@@ -32,12 +32,14 @@ class WordCountMapper extends Mapper<LongWritable, Text, Text, IntWritable>{
             // 比如习题一中的运行时参数等，我们可以在map函数中处理这个信息，这也是hadoop中参数传递中一个很经典的例子，
             // 同时context作为了map和reduce执行中各个函数的一个桥梁，这个设计和java web中的session对象、application对象很相似。
             context.write(new Text(word), new IntWritable(1));
+            // 也就是context这个对象，就是连接各个操作步骤的桥梁
         }
     }
 }
 
 class WordCountReducer extends Reducer<Text, IntWritable, Text, IntWritable>{
 
+    // reduce方法作用：将新的K2和V2转为K3和V3，并将其写入上下文对象中（context）
     @Override
     protected void reduce(Text key, Iterable<IntWritable> values, Reducer<Text, IntWritable, Text, IntWritable>.Context context) throws IOException, InterruptedException {
 
@@ -72,7 +74,7 @@ public class WordCountDriver {
         conf.set("mapreduce.framework.name", "local");
         Job wcjob = Job.getInstance(conf);
 
-        // 指定MR Job jar包运行主类
+            // 指定MR Job jar包运行主类
         wcjob.setJarByClass(WordCountDriver.class);
 
         // 指定本次MR所有的Mapper Reducer类

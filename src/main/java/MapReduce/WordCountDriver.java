@@ -74,7 +74,7 @@ public class WordCountDriver {
         conf.set("mapreduce.framework.name", "local");
         Job wcjob = Job.getInstance(conf);
 
-            // 指定MR Job jar包运行主类
+        // 指定MR Job jar包运行主类
         wcjob.setJarByClass(WordCountDriver.class);
 
         // 指定本次MR所有的Mapper Reducer类
